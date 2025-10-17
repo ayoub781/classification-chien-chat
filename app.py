@@ -59,11 +59,13 @@ div.block-container {
 # --- Titre et description ---
 st.title("Classification Chien vs Chat")
 st.markdown("### Téléverse une image pour savoir si c’est un **chien** ou un **chat**")
+st.info("**Merci de téléverser uniquement une image de chien ou de chat.**\n\n"
+        "Ce modèle est spécifiquement entraîné pour distinguer ces deux catégories.")
 
 # --- Chargement du modèle ---
 @st.cache_resource
 def load_model():
-    model = tf.keras.models.load_model("model_chien_chat.keras")  # ou .h5 selon ton choix
+    model = tf.keras.models.load_model("model_chien_chat_transfer.h5")  # ou .h5 selon ton choix
     return model
 
 model = load_model()
@@ -88,10 +90,11 @@ if uploaded_file is not None:
 
     # --- Résultat ---
     st.markdown("---")
-    if prob > 0.5:
+    if prob > 0.7:
         st.success(f"🐶 C’est très probablement un **chien** ! (confiance : {prob*100:.2f}%)")
-    else:
+    elif prob < 0.3:
         st.info(f"🐱 C’est très probablement un **chat** ! (confiance : {(1-prob)*100:.2f}%)")
-
+    else:
+        st.warning("🤔 Je ne suis pas sûr... cette image ne ressemble ni à un chien ni à un chat.")
     st.markdown("---")
     st.caption("Modèle CNN entraîné avec TensorFlow et Keras 🧠")
